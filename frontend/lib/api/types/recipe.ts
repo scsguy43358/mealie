@@ -419,6 +419,7 @@ export interface RecipeTimelineEventIn {
   eventMessage?: string | null;
   image?: TimelineEventImage | null;
   timestamp?: string;
+  rating?: number;
 }
 export interface RecipeTimelineEventOut {
   recipeId: string;
