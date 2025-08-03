@@ -20,6 +20,13 @@
               persistent-hint
               rows="4"
             />
+            <v-rating
+              v-model="newTimelineEvent.rating"
+              color="amber"
+              background-color="grey"
+              length="5"
+            />
+
             <v-container>
               <v-row>
                 <v-col cols="6">
@@ -142,6 +149,7 @@ const newTimelineEvent = ref<RecipeTimelineEventIn>({
   eventMessage: "",
   timestamp: undefined,
   recipeId: props.recipe?.id || "",
+  rating: 0,
 });
 const newTimelineEventImage = ref<Blob | File>();
 const newTimelineEventImageName = ref<string>("");
