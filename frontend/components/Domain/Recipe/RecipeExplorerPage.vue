@@ -166,6 +166,17 @@
               </v-card-text>
             </v-card>
           </v-menu>
+          <v-btn
+          size="small"
+          color="error"
+          class="ml-2"
+          @click="showDeleteDialog = true"
+  >
+          <v-icon start>
+{{ $globals.icons.delete }}
+</v-icon>
+          {{ $t("general.delete") }}
+          </v-btn>
         </div>
         <div
           v-if="!state.auto"
@@ -200,6 +211,36 @@
         @append-recipes="appendRecipes"
       />
     </v-container>
+     <v-dialog v-model="showDeleteDialog" max-width="600">
+      <v-card>
+        <v-card-title>
+          {{ $t("general.delete-recipes") }}
+        </v-card-title>
+        <v-card-text>
+          <v-list>
+            <v-list-item
+              v-for="recipe in recipes"
+              :key="recipe.id"
+            >
+              <v-checkbox
+                v-model="selectedRecipes"
+                :value="recipe"
+                :label="recipe.name"
+              />
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="showDeleteDialog = false">
+            {{ $t("general.cancel") }}
+          </v-btn>
+          <v-btn color="error" @click="deleteSelectedRecipes">
+            {{ $t("general.delete") }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -236,6 +277,9 @@ export default defineNuxtComponent({
     const { $globals } = useNuxtApp();
 
     const { isOwnGroup } = useLoggedInState();
+    const showDeleteDialog = ref(false);
+    const selectedRecipes = ref<any[]>([]);
+
     const state = ref({
       auto: true,
       ready: false,
@@ -334,6 +378,20 @@ export default defineNuxtComponent({
 
     function hideKeyboard() {
       input.value.blur();
+    }
+    async function deleteSelectedRecipes() {
+      for (const recipe of selectedRecipes.value) {
+        try {
+          await removeRecipe(recipe.slug);
+        }
+        catch (err) {
+          console.error("Failed to delete recipe:", recipe.name, err);
+        }
+      }
+
+      selectedRecipes.value = [];
+      showDeleteDialog.value = false;
+      await search();
     }
 
     const input: Ref<any> = ref(null);
@@ -681,6 +739,10 @@ export default defineNuxtComponent({
       passedQueryWithSeed,
 
       filterItems,
+      showDeleteDialog,
+      selectedRecipes,
+      deleteSelectedRecipes,
+
     };
   },
 });

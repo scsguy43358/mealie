@@ -1,4 +1,11 @@
 <template>
+  <v-btn color="red" class="mb-4" @click="showDeleteDialog = true">
+  <v-icon left>
+mdi-delete
+</v-icon>
+  Delete Recipes
+</v-btn>
+
   <v-list :class="tile ? 'd-flex flex-wrap background' : 'background'">
     <v-sheet
       v-for="recipe, index in recipes"
@@ -49,6 +56,29 @@
       </v-list-item>
     </v-sheet>
   </v-list>
+  <v-dialog v-model="showDeleteDialog" max-width="500px">
+  <v-card>
+    <v-card-title>Select Recipes to Delete</v-card-title>
+    <v-card-text>
+      <v-checkbox
+        v-for="recipe in recipes"
+        :key="recipe.id"
+        v-model="selectedRecipes"
+        :label="recipe.name"
+        :value="recipe.id"
+      />
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
+      <v-btn text @click="showDeleteDialog = false">
+Cancel
+</v-btn>
+      <v-btn color="red" text @click="deleteSelectedRecipes">
+Delete
+</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -77,6 +107,7 @@ const $auth = useMealieAuth();
 const { frac } = useFraction();
 const route = useRoute();
 const groupSlug = computed(() => route.params.groupSlug || $auth.user?.value?.groupSlug || "");
+const api = useUserApi();
 
 const attrs = computed(() => {
   return props.small
@@ -168,4 +199,35 @@ const listItemDescriptions = computed<string[]>(() => {
 
   return listItemDescriptions;
 });
+// ===============================
+// Delete Dialog State
+// ===============================
+const showDeleteDialog = ref(false); // controls if dialog is visible
+const selectedRecipes = ref<string[]>([]); // stores IDs of recipes user checked
+
+// ===============================
+// Delete Logic
+// ===============================
+async function deleteSelectedRecipes() {
+  if (!selectedRecipes.value.length) {
+    return;
+  }
+
+  // Call your backend API to delete recipes (replace with actual API call)
+  for (const recipeId of selectedRecipes.value) {
+    try {
+      await api.recipes.deleteOne(recipeId); // assuming your API has this
+    }
+    catch (err) {
+      console.error("Failed to delete recipe", recipeId, err);
+    }
+  }
+
+  // Update UI: remove deleted recipes locally
+  props.recipes = props.recipes.filter(r => !selectedRecipes.value.includes(r.id));
+
+  // Reset state
+  selectedRecipes.value = [];
+  showDeleteDialog.value = false;
+}
 </script>

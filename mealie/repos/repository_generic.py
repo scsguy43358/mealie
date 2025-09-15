@@ -66,7 +66,18 @@ class RepositoryGeneric[Schema: MealieModel, Model: SqlAlchemyBase]:
 
     @property
     def column_aliases(self) -> dict[str, ColumnElement]:
-        return {}
+        aliases = {}
+
+        if hasattr(self.model, "timestamp"):
+            aliases["timestamp"] = getattr(self.model, "timestamp")
+
+        if hasattr(self.model, "created_at"):
+            aliases["created_at"] = getattr(self.model, "created_at")
+
+        if hasattr(self.model, "updated_at"):
+            aliases["updated_at"] = getattr(self.model, "updated_at")
+
+        return aliases
 
     def _random_seed(self) -> str:
         return str(datetime.now(tz=UTC))

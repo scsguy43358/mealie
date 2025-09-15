@@ -32,7 +32,7 @@
             <v-list>
               <v-list-item
                 :prepend-icon="preferences.orderDirection === 'asc' ? $globals.icons.sortCalendarDescending : $globals.icons.sortCalendarAscending"
-                :title="preferences.orderDirection === 'asc' ? $t('general.sort-descending') : $t('general.sort-ascending')"
+                :title="preferences.orderDirection === 'asc' ? 'Oldest First' : 'Newest First'"
                 @click="reverseSort"
               />
               <v-divider />
@@ -243,10 +243,23 @@ async function scrollTimelineEvents() {
   const orderBy = "timestamp";
   const orderDirection = preferences.value.orderDirection === "asc" ? "asc" : "desc";
 
-  const eventTypeValue = `["${preferences.value.types.join("\", \"")}"]`;
-  const queryFilter = `(${props.queryFilter}) AND eventType IN ${eventTypeValue}`;
+  let queryFilter = "";
 
-  const response = await api.recipes.getAllTimelineEvents(page.value, perPage, { orderBy, orderDirection, queryFilter });
+  if (props.queryFilter && props.queryFilter.trim() !== "") {
+    queryFilter = `(${props.queryFilter})`;
+  }
+
+  if (preferences.value.types.length) {
+    const eventTypeValue = `('${preferences.value.types.join("','")}')`;
+    queryFilter += (queryFilter ? " AND " : "") + `event_type IN ${eventTypeValue}`;
+  }
+
+  const response = await api.recipes.getAllTimelineEvents(page.value, perPage, {
+    orderBy,
+    orderDirection,
+    queryFilter,
+  });
+
   page.value += 1;
   if (!response?.data) {
     return;
@@ -260,12 +273,10 @@ async function scrollTimelineEvents() {
     }
   }
 
-  // fetch recipes
   if (props.showRecipeCards) {
     await updateRecipes(events);
   }
 
-  // this is set last so Vue knows to re-render
   timelineEvents.value.push(...events);
 }
 

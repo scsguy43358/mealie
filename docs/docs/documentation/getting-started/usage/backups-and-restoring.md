@@ -1,10 +1,10 @@
 # Backups and Restores
 
-Mealie provides an integrated mechanic for doing full installation backups of the database. 
+Mealie provides an integrated mechanic for doing full installation backups of the database.
 
 Navigate to Settings > Backups or manually by adding `/admin/backups` to your instance URL.
 
-From this page, you will be able to: 
+From this page, you will be able to:
 
 - See a list of available backups
 - Create a backup

@@ -84,6 +84,16 @@
             <div v-if="event.eventMessage" :class="useMobileFormat ? 'text-caption' : ''">
               <SafeMarkdown :source="event.eventMessage" />
             </div>
+            <v-rating
+              v-if="event.rating !=null && event.rating !== undefined"
+              :model-value="event.rating"
+              length="5"
+              readonly
+              color="amber"
+              background-color="grey"
+              density="compact"
+              class="mt-1"
+              />
           </v-col>
         </v-row>
       </v-card-text>

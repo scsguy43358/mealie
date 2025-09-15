@@ -434,6 +434,7 @@ export interface RecipeTimelineEventOut {
   householdId: string;
   createdAt: string;
   updatedAt: string;
+  rating?: number | null;
 }
 export interface RecipeTimelineEventUpdate {
   subject: string;

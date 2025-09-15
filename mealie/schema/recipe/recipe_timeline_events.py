@@ -42,10 +42,12 @@ class RecipeTimelineEventIn(MealieModel):
 
     timestamp: datetime = datetime.now(UTC)
     model_config = ConfigDict(use_enum_values=True)
+    rating: int | None = None
 
 
 class RecipeTimelineEventCreate(RecipeTimelineEventIn):
     user_id: UUID4
+    rating: int | None = None
 
 
 class RecipeTimelineEventUpdate(MealieModel):
@@ -53,6 +55,7 @@ class RecipeTimelineEventUpdate(MealieModel):
     message: str | None = Field(None, alias="eventMessage")
     image: TimelineEventImage | None = None
     model_config = ConfigDict(use_enum_values=True)
+    rating: int | None = None
 
 
 class RecipeTimelineEventOut(RecipeTimelineEventCreate):
@@ -63,6 +66,7 @@ class RecipeTimelineEventOut(RecipeTimelineEventCreate):
     created_at: datetime
     updated_at: datetime = UpdatedAtField(...)
     model_config = ConfigDict(from_attributes=True)
+    rating: int | None = None
 
     @classmethod
     def loader_options(cls) -> list[LoaderOption]:

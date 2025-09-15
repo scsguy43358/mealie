@@ -217,9 +217,23 @@ export class RecipeAPI extends BaseCRUDAPI<CreateRecipe, Recipe, Recipe> {
     return await this.requests.delete<RecipeTimelineEventOut>(routes.recipesTimelineEventId(eventId));
   }
 
-  async getAllTimelineEvents(page = 1, perPage = -1, params = {} as any) {
+  async getAllTimelineEvents(
+    page = 1,
+    perPage = -1,
+    params: { orderBy?: string; orderDirection?: "asc" | "desc"; queryFilter?: string } = {},
+  ) {
+    const q: Record<string, string | number> = {
+      page,
+      per_page: perPage,
+    };
+
+    if (params.orderBy) q["order_by"] = params.orderBy;
+    if (params.orderDirection) q["order_direction"] = params.orderDirection;
+    if (params.queryFilter) q["query_filter"] = params.queryFilter;
+
     return await this.requests.get<PaginationData<RecipeTimelineEventOut>>(
-      routes.recipesTimelineEvent, { page, perPage, ...params },
+      routes.recipesTimelineEvent,
+      q,
     );
   }
 

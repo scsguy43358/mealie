@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
+from sqlalchemy import ForeignKey, String, Integer
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
@@ -14,7 +15,7 @@ from .._model_utils.guid import GUID
 if TYPE_CHECKING:
     from ..users import User
     from . import RecipeModel
-
+ 
 
 class RecipeTimelineEvent(SqlAlchemyBase, BaseMixins):
     __tablename__ = "recipe_timeline_events"
@@ -38,6 +39,7 @@ class RecipeTimelineEvent(SqlAlchemyBase, BaseMixins):
     message: Mapped[str | None] = mapped_column(String)
     event_type: Mapped[str | None] = mapped_column(String)
     image: Mapped[str | None] = mapped_column(String)
+    rating: Mapped[int | None] = mapped_column(Integer)
 
     # Timestamps
     timestamp: Mapped[datetime | None] = mapped_column(NaiveDateTime, index=True)
